@@ -13,7 +13,7 @@ func Greet(name string) (string, error) {
 }
 
 func TestGreet1(t *testing.T) {
-	name := "Bob"
+	name := "Sarah"
 	want := "Hello Sarah"
 
 	got, err := Greet(name)
@@ -22,7 +22,7 @@ func TestGreet1(t *testing.T) {
 	}
 }
 
-func TestGreet (t *testing.T) {
+func TestGreet(t *testing.T) {
 	tests := []struct{
 		desc string
 		name string
@@ -45,7 +45,15 @@ func TestGreet (t *testing.T) {
 	for _, test := range tests {
 		got, err := Greet(test.name)
 		switch {
-			case err == nil && test.expectErr
+		case err == nil && test.expectErr:
+			t.Errorf("TestGreet(%s): got err == nil, want err != nil", test.desc)
+		continue
+		// We got an error we expected, so it moves to the next test
+		case err != nil:
+			continue
+		}
+		if got != test.want {
+			t.Errorf("TestGreet(%s): got result %q, want %q", test.desc, got, test.want)
 		}
 	}
 }
