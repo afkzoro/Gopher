@@ -52,5 +52,48 @@ func (f fakeRecorder) Record(name string) (Record, error) {
 }
 
 func TestGreeter (t *testing.T) {
-	
+	tests := []struct{
+		desc string
+		name string
+		recorder recorder
+		want string
+		expectErr bool
+	}{
+		{
+			desc : "Error: recorder had some server error",
+			name: "John",
+			recorder: fakeRecorder{err: true},
+			expectErr: true,
+		},
+		{
+			desc: "Error: server returned wrong name",
+			name: "John",
+			recorder: fakeRecorder{data: Record{Name: "Bob", Age: 20}},
+			expectErr: true,
+		},
+		{
+			desc: "Success",
+			name: "John",
+			recorder: fakeRecorder{data: Record{Name: "John", Age: 20}},
+			want: "Greetings John",
+		},
+	}
+
+	for _, test := range tests {
+		got, err := Greeter(test.name, test.recorder)
+		switch {
+		case err == nil && test.expectErr:
+			t.Errorf("TestGreet (%s); got err == nil, want err != nil", test.desc)
+			continue
+		case err != nil && !test.expectErr:
+			t.Errorf("TestGreet (%s); got err != %s, want err == nil", test.desc, err)
+			continue
+		case err != nil:
+			continue
+		}
+
+		if got != test.want {
+			t.Errorf("TestGreet (%s); got result %q, want %q", test.desc, got, test.want)
+		}
+	}
 }
