@@ -1,5 +1,4 @@
-package goroutine
-
+package goroutines
 import "fmt"
 
 // simple goroutine
